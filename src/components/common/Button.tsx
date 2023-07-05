@@ -1,25 +1,25 @@
-import { HTMLProps, ReactNode , forwardRef , ForwardedRef } from 'react';
+import { HTMLProps, ReactNode, forwardRef, ForwardedRef } from 'react';
 import * as S from './Button.style';
 const Button = forwardRef((props: IButtonProps, ref: ForwardedRef<HTMLButtonElement>) => {
-    const { label, icon, testId, ...rest } = props;
-    return (
-        <S.Button {...rest} data-testid={testId}>
-        {icon}
-        {label}
-        </S.Button>
-    );
-    });
+  const { label, icon, testId, ...rest } = props;
+  return (
+    <S.Button {...rest} data-testid={testId}>
+      {icon}
+      {label}
+    </S.Button>
+  );
+});
 
 export interface IButtonProps extends Omit<HTMLProps<HTMLButtonElement>, 'ref'> {
-    width?: string;
-    height?: string;
-    color?: string;
-    fontSize?: string;
-    fontWeight?: string;
-    label?: string;
-    icon?: ReactNode;
-    testId?: string;
-    type?: 'button' | 'submit' | 'reset' | undefined;
+  width?: string;
+  height?: string;
+  color?: string;
+  fontSize?: string;
+  fontWeight?: string;
+  label?: string;
+  icon?: ReactNode;
+  testId?: string;
+  type?: 'button' | 'submit' | 'reset' | undefined;
 }
 
 export default Button;
