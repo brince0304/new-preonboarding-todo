@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 
-const axiosInstance = (url: string, options: any) => {
+const client = (options?: any) => {
   return axios.create({
-    baseURL: url,
+    baseURL: baseURL,
     ...options,
   });
 };
@@ -10,7 +10,7 @@ const axiosInstance = (url: string, options: any) => {
 const setInterceptors = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
     function (config) {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       config.headers.Authorization = token ? `Bearer ${token}` : '';
       return config;
     },
@@ -26,13 +26,14 @@ const setInterceptors = (instance: AxiosInstance) => {
 
     function (error) {
       if (error.response.status === 401) {
-        localStorage.removeItem('accessToken');
-        return Promise.reject(error);
+        localStorage.removeItem('token');
       }
+      return Promise.reject(error);
     },
   );
+  return instance;
 };
 
 const baseURL = 'https://www.pre-onboarding-selection-task.shop/';
 
-export default setInterceptors(axiosInstance(baseURL, { timeout: 10000 }));
+export default setInterceptors(client());
