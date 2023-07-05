@@ -17,23 +17,22 @@ export const Container = styled.div`
 export const Input = styled.input<StyledInputProps>`
   width: ${({ width }) => width || '100%'};
   height: ${({ height }) => height || '40px'};
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: ${({ fontSize }) => fontSize || '16px'};
+  padding: ${({ padding }) => padding || '5px 10px'};
+  border: 2px solid #121212;
+  font-size: ${({ fontSize }) => fontSize || '1.2rem'};
   font-weight: ${({ fontWeight }) => fontWeight || 'normal'};
   color: ${({ color }) => color || '#121212'};
   box-sizing: border-box;
   outline: none;
   &:focus {
-    border: 1px solid #000;
+    border: 1.5px solid #121212;
   }
 `;
 
 export const IconWrap = styled.div`
   position: absolute;
   right: 10px;
-  top: 50%;
+  top: 35%;
 `;
 
 export const HelperText = styled.span<StyledHelpertextProps>`
@@ -48,6 +47,7 @@ interface StyledInputProps {
   fontSize?: string;
   fontWeight?: string;
   color?: string;
+  padding?: string;
 }
 
 interface StyledHelpertextProps {
