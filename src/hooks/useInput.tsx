@@ -1,11 +1,5 @@
 import { ChangeEvent, MutableRefObject, useState } from 'react';
 
-interface UseInputProps<T> {
-  initialValue: T;
-  regex?: RegExp;
-  refObject?: MutableRefObject<HTMLInputElement>;
-}
-
 const useInput = <T,>({ initialValue, regex, refObject }: UseInputProps<T>) => {
   const [value, setValue] = useState<T>(initialValue);
   const isValidate = regex && typeof value === 'string' ? regex.test(value) : true;
@@ -32,5 +26,11 @@ const useInput = <T,>({ initialValue, regex, refObject }: UseInputProps<T>) => {
     setBlur,
   };
 };
+
+interface UseInputProps<T> {
+  initialValue: T;
+  regex?: RegExp;
+  refObject?: MutableRefObject<HTMLInputElement>;
+}
 
 export default useInput;
