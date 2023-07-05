@@ -1,4 +1,4 @@
-import { ChangeEvent, MutableRefObject, useState } from 'react';
+import { ChangeEvent, MutableRefObject, RefObject, useState } from 'react';
 
 const useInput = <T,>({ initialValue, regex, refObject }: UseInputProps<T>) => {
   const [value, setValue] = useState<T>(initialValue);
@@ -30,7 +30,7 @@ const useInput = <T,>({ initialValue, regex, refObject }: UseInputProps<T>) => {
 interface UseInputProps<T> {
   initialValue: T;
   regex?: RegExp;
-  refObject?: MutableRefObject<HTMLInputElement>;
+  refObject?: RefObject<HTMLInputElement> | MutableRefObject<HTMLInputElement | undefined>;
 }
 
 export default useInput;
