@@ -25,6 +25,7 @@ export const Button = styled.button<IStyledButtonProps>`
       background-color: #fff;
       color: #646464;
     }
+    border: 2px solid #787878;
   }
   &:active {
     background-color: #000;

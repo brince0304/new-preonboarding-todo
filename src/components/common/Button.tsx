@@ -16,7 +16,7 @@ export interface IButtonProps extends Omit<HTMLProps<HTMLButtonElement>, 'ref'> 
   color?: string;
   fontSize?: string;
   fontWeight?: string;
-  label?: string;
+  label?: any;
   icon?: ReactNode;
   testId?: string;
   type?: 'button' | 'submit' | 'reset' | undefined;
