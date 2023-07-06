@@ -8,7 +8,7 @@ import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
 import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from './AuthIcons';
 
-const AuthForm = ({ api, title, errorHandler,successHandler }: IAuthProps) => {
+const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
   const emailRegex = /@/;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -25,7 +25,11 @@ const AuthForm = ({ api, title, errorHandler,successHandler }: IAuthProps) => {
     isValidate: isPasswordValid,
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
-  const { loading, error, request, data } = useAxios({api,successCallback:successHandler,errorCallback:errorHandler});
+  const { loading, error, request, data } = useAxios({
+    api,
+    successCallback: successHandler,
+    errorCallback: errorHandler,
+  });
   const disabled = !isEmailValid || !isPasswordValid || loading;
   const testId = title === '로그인' ? 'signin-form' : 'signup-form';
   const authDispatch = useAuthDispatch();
@@ -53,9 +57,9 @@ const AuthForm = ({ api, title, errorHandler,successHandler }: IAuthProps) => {
     helperText:
       !isPasswordValid && passwordValue.length > 0 ? '비밀번호는 8자 이상이어야 합니다.' : '비밀번호를 입력해주세요.',
   } as IInputProps;
-  
+
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const isButtonHover = useHover({ref:buttonRef})
+  const isButtonHover = useHover({ ref: buttonRef });
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,30 +78,33 @@ const AuthForm = ({ api, title, errorHandler,successHandler }: IAuthProps) => {
   useEffect(() => {
     if (data?.access_token) {
       setTimeout(() => {
-      setToken(authDispatch, data.access_token);
+        setToken(authDispatch, data.access_token);
       }, 2000);
     }
   }, [authDispatch, data]);
 
-  const buttonIcon = loading ? <LoadingIcon/> : (isButtonHover ? <LoadingIcon/> : <Icon/>)
-  const emailInputIcon = error ? <ErrorIcon width={"30px"} height={"30px"}/> : <SuccessIcon />
-  const passwordInputIcon = <HideIcon isHide={isPasswordHide} setIsHide={setIsPasswordHide} />
+  const buttonIcon = loading ? <LoadingIcon /> : isButtonHover ? <LoadingIcon /> : <Icon />;
+  const emailInputIcon = error ? <ErrorIcon width={'30px'} height={'30px'} /> : <SuccessIcon />;
+  const passwordInputIcon = <HideIcon isHide={isPasswordHide} setIsHide={setIsPasswordHide} />;
 
   return (
     <S.Container>
       <S.Title>
-        <HappyCatIcon/>
-      <span>{title}</span>
-      <HappyCatIcon/>
+        <HappyCatIcon />
+        <span>{title}</span>
+        <HappyCatIcon />
       </S.Title>
       <S.Form onSubmit={onSubmit}>
         <Input {...emailInputProps} ref={emailInputRef} icon={emailInputIcon} />
-        <Input
-          {...passwordInputProps}
-          icon={passwordInputIcon}
-          ref={passwordInputRef}
+        <Input {...passwordInputProps} icon={passwordInputIcon} ref={passwordInputRef} />
+        <Button
+          testId={testId}
+          type="submit"
+          ref={buttonRef}
+          disabled={disabled || data}
+          icon={buttonIcon}
+          label={loading ? '로딩중...' : title}
         />
-        <Button testId={testId} type="submit" ref={buttonRef} disabled={disabled || data} icon={buttonIcon} label={loading ? '로딩중...' : title} />
       </S.Form>
     </S.Container>
   );
@@ -107,7 +114,7 @@ interface IAuthProps {
   api: (data?: any) => Promise<void>;
   title: string;
   errorHandler: () => void;
-  successHandler ?: () => void;
+  successHandler?: () => void;
 }
 
 export default AuthForm;

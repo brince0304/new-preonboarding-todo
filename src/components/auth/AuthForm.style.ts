@@ -14,9 +14,9 @@ export const Container = styled.div`
 
 export const Title = styled.div`
   span {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #121212;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #121212;
   }
   display: flex;
   flex-direction: row;

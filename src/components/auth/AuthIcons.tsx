@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Tooltip } from '@mui/material';
-export const ErrorIcon = (props:{width:string,height:string}) => {
+export const ErrorIcon = (props: { width: string; height: string }) => {
   return (
     <img
       src={require('../../assets/images/banana-cat-cries-sad-cat.gif')}
@@ -20,7 +20,7 @@ export const HappyCatIcon = () => {
       height="50px"
     />
   );
-}
+};
 
 export const SuccessIcon = () => {
   return (
