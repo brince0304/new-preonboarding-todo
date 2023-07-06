@@ -1,7 +1,21 @@
+import { getTodos } from 'apis/todo';
+import TodoForm from 'components/todo/TodoForm';
+import useAxios from 'hooks/useAxios';
+import { useEffect } from 'react';
+
 const Todo = () => {
+  const { request } = useAxios({
+    api: getTodos,
+  });
+
+  useEffect(() => {
+    request();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div>
-      <h1>Todo</h1>
+      <TodoForm getTodos={request} />
     </div>
   );
 };
