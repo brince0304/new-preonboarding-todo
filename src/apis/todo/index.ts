@@ -1,7 +1,7 @@
 import client from 'apis/client';
 
-export const createTodo = async (content: string): Promise<ITodo> => {
-  return await client.post('/todos', { content });
+export const createTodo = async (todo: string): Promise<ITodo> => {
+  return await client.post('/todos', todo);
 };
 
 export const getTodos = async (): Promise<ITodo[]> => {

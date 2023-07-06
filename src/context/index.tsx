@@ -58,4 +58,12 @@ function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export { AuthProvider, useAuthState, useAuthDispatch, setToken };
+const getTokenFromLocalStorage = () => {
+  const storedState = localStorage.getItem(stateName);
+  if (storedState) {
+    return JSON.parse(storedState).token;
+  }
+  return null;
+};
+
+export { AuthProvider, useAuthState, useAuthDispatch, setToken, getTokenFromLocalStorage };
