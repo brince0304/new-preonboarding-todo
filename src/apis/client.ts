@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { getTokenFromLocalStorage } from 'context';
 
 const client = (options?: any) => {
   return axios.create({
@@ -10,7 +11,7 @@ const client = (options?: any) => {
 const setInterceptors = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
     function (config) {
-      const token = localStorage.getItem('token');
+      const token = getTokenFromLocalStorage();
       config.headers.Authorization = token ? `Bearer ${token}` : '';
       return config;
     },
@@ -26,7 +27,7 @@ const setInterceptors = (instance: AxiosInstance) => {
 
     function (error) {
       if (error.response.status === 401) {
-        localStorage.removeItem('token');
+        localStorage.removeItem('tokenState');
       }
       return Promise.reject(error);
     },
