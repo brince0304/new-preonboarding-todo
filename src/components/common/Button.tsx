@@ -3,9 +3,9 @@ import * as S from './Button.style';
 const Button = forwardRef((props: IButtonProps, ref: ForwardedRef<HTMLButtonElement>) => {
   const { label, icon, testId, ...rest } = props;
   return (
-    <S.Button {...rest} data-testid={testId}>
-      {icon}
+    <S.Button {...rest} ref={ref} data-testid={testId}>
       {label}
+      {icon}
     </S.Button>
   );
 });
