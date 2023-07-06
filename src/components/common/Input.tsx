@@ -27,4 +27,4 @@ export interface IInputProps extends Omit<HTMLProps<HTMLInputElement>, 'ref'> {
   testId?: string;
 }
 
-export default React.memo(Input);
+export default Input;
