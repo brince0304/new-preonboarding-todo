@@ -1,15 +1,26 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Tooltip } from '@mui/material';
-export const ErrorIcon = () => {
+export const ErrorIcon = (props:{width:string,height:string}) => {
   return (
     <img
       src={require('../../assets/images/banana-cat-cries-sad-cat.gif')}
       alt="error-icon"
-      width="30px"
-      height="30px"
+      width={props.width}
+      height={props.height}
     />
   );
 };
+
+export const HappyCatIcon = () => {
+  return (
+    <img
+      src={require('../../assets/images/fast-cat-cat-excited.gif')}
+      alt="happy-cat-icon"
+      width="50px"
+      height="50px"
+    />
+  );
+}
 
 export const SuccessIcon = () => {
   return (
@@ -20,6 +31,12 @@ export const SuccessIcon = () => {
 export const LoadingIcon = () => {
   return (
     <img src={require('../../assets/images/apple-cat-running.gif')} alt="loading-icon" width="30px" height="30px" />
+  );
+};
+
+export const Icon = () => {
+  return (
+    <img src={require('../../assets/images/apple-cat-standing.png')} alt="standing-icon" width="30px" height="30px" />
   );
 };
 

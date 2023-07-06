@@ -1,13 +1,14 @@
 import Button from 'components/common/Button';
+import { setToken, useAuthDispatch } from 'context';
 import useAxios from 'hooks/useAxios';
+import useHover from 'hooks/useHover';
 import useInput from 'hooks/useInput';
-import React from 'react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
-import { ErrorIcon, HideIcon, SuccessIcon } from './AuthIcons';
+import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from './AuthIcons';
 
-const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
+const AuthForm = ({ api, title, errorHandler,successHandler }: IAuthProps) => {
   const emailRegex = /@/;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -24,8 +25,10 @@ const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
     isValidate: isPasswordValid,
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
-  const { loading, error, request, data } = useAxios(api);
+  const { loading, error, request, data } = useAxios({api,successCallback:successHandler,errorCallback:errorHandler});
   const disabled = !isEmailValid || !isPasswordValid || loading;
+  const testId = title === '로그인' ? 'signin-form' : 'signup-form';
+  const authDispatch = useAuthDispatch();
 
   const emailInputProps = {
     label: '이메일',
@@ -36,6 +39,7 @@ const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
     error: !isEmailValid && emailValue.length > 0,
     helperText: !isEmailValid && emailValue.length > 0 ? '이메일 형식이 올바르지 않습니다.' : '"@"를 포함해주세요.',
     autoFocus: true,
+    testId: 'email-input',
   } as IInputProps;
 
   const passwordInputProps = {
@@ -45,9 +49,13 @@ const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
     value: passwordValue,
     onChange: onPasswordChange,
     error: !isPasswordValid && passwordValue.length > 0,
+    testId: 'password-input',
     helperText:
       !isPasswordValid && passwordValue.length > 0 ? '비밀번호는 8자 이상이어야 합니다.' : '비밀번호를 입력해주세요.',
   } as IInputProps;
+  
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const isButtonHover = useHover({ref:buttonRef})
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,7 +66,6 @@ const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
 
   useEffect(() => {
     if (error) {
-      errorHandler();
       setEmailFocus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,21 +73,31 @@ const AuthForm = ({ api, title, errorHandler }: IAuthProps) => {
 
   useEffect(() => {
     if (data?.access_token) {
-      localStorage.setItem('token', data.access_token);
+      setTimeout(() => {
+      setToken(authDispatch, data.access_token);
+      }, 2000);
     }
-  }, [data]);
+  }, [authDispatch, data]);
+
+  const buttonIcon = loading ? <LoadingIcon/> : (isButtonHover ? <LoadingIcon/> : <Icon/>)
+  const emailInputIcon = error ? <ErrorIcon width={"30px"} height={"30px"}/> : <SuccessIcon />
+  const passwordInputIcon = <HideIcon isHide={isPasswordHide} setIsHide={setIsPasswordHide} />
 
   return (
     <S.Container>
-      <S.Title>{title}</S.Title>
+      <S.Title>
+        <HappyCatIcon/>
+      <span>{title}</span>
+      <HappyCatIcon/>
+      </S.Title>
       <S.Form onSubmit={onSubmit}>
-        <Input {...emailInputProps} ref={emailInputRef} icon={error ? <ErrorIcon /> : <SuccessIcon />} />
+        <Input {...emailInputProps} ref={emailInputRef} icon={emailInputIcon} />
         <Input
           {...passwordInputProps}
-          icon={<HideIcon isHide={isPasswordHide} setIsHide={setIsPasswordHide} />}
+          icon={passwordInputIcon}
           ref={passwordInputRef}
         />
-        <Button type="submit" disabled={disabled} label={loading ? '로딩중...' : title} />
+        <Button testId={testId} type="submit" ref={buttonRef} disabled={disabled || data} icon={buttonIcon} label={loading ? '로딩중...' : title} />
       </S.Form>
     </S.Container>
   );
@@ -90,6 +107,7 @@ interface IAuthProps {
   api: (data?: any) => Promise<void>;
   title: string;
   errorHandler: () => void;
+  successHandler ?: () => void;
 }
 
 export default AuthForm;
