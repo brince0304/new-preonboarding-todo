@@ -1,4 +1,4 @@
-import { ErrorIcon } from 'components/auth/AuthIcons';
+import { ErrorIcon } from 'components/common/Icon';
 
 const Error = () => {
   return (
