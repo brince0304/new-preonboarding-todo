@@ -1,7 +1,11 @@
 import { signIn } from 'apis/auth';
 import AuthForm from 'components/auth/AuthForm';
+import { setToken, useAuthDispatch } from 'context';
+import useAxios from 'hooks/useAxios';
 import useToast, { IUseToastProps } from 'hooks/useToast';
+import { useEffect } from 'react';
 import * as S from './SignIn.style';
+
 const SignIn = () => {
   const successToastProps = {
     severity: 'success',
@@ -24,9 +28,23 @@ const SignIn = () => {
   const handleSignInSuccess = () => {
     handleOpenSuccessToast();
   };
+  const { loading, error, request, data } = useAxios({
+    api : signIn,
+    successCallback: handleSignInSuccess,
+    errorCallback: handleSignInError,
+  });
+  const authDispatch = useAuthDispatch();
+  useEffect(() => {
+    if (data?.access_token) {
+      setTimeout(() => {
+        setToken(authDispatch, data.access_token);
+      }, 2000);
+    }
+  }, [data, authDispatch]);
+
   return (
     <S.Container>
-      <AuthForm title={'로그인'} api={signIn} errorHandler={handleSignInError} successHandler={handleSignInSuccess} />
+      <AuthForm isSuccess={!!data} title={'로그인'} error={error} loading={loading}  testId='signin-button' request={request}/>
       {SignInToast}
       {ErrorToast}
     </S.Container>

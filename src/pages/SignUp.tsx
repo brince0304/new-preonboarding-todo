@@ -1,5 +1,6 @@
 import { signUp } from 'apis/auth';
 import AuthForm from 'components/auth/AuthForm';
+import useAxios from 'hooks/useAxios';
 import useToast, { IUseToastProps } from 'hooks/useToast';
 import { useNavigate } from 'react-router';
 import * as S from './SignIn.style';
@@ -30,9 +31,16 @@ const SignUp = () => {
       navigate('/signin');
     }, 2000);
   };
+
+  const { loading, error, request, data } = useAxios({
+    api : signUp,
+    successCallback: handleSignUpSuccess,
+    errorCallback: handleSignUpError,
+  });
+
   return (
     <S.Container>
-      <AuthForm title={'회원가입'} api={signUp} successHandler={handleSignUpSuccess} errorHandler={handleSignUpError} />
+      <AuthForm title={'회원가입'} request={request} testId={'signup-button'} loading={loading} error={error} isSuccess={!!data} />
       {SignUpToast}
       {ErrorToast}
     </S.Container>

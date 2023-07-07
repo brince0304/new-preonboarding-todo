@@ -1,6 +1,4 @@
 import Button from 'components/common/Button';
-import { setToken, useAuthDispatch } from 'context';
-import useAxios from 'hooks/useAxios';
 import useHover from 'hooks/useHover';
 import useInput from 'hooks/useInput';
 import { FormEvent, useEffect, useRef, useState } from 'react';
@@ -8,7 +6,7 @@ import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
 import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from '../common/Icon';
 
-const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
+const AuthForm = ({ testId, request, title, error, loading, isSuccess}: IAuthProps) => {
   const emailRegex = /@/;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -26,26 +24,8 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
 
-  const errorHandlerCallback = () => {
-    errorHandler && errorHandler();
-    setEmailFocus();
-  };
 
-  const { loading, error, request, data } = useAxios({
-    api,
-    successCallback: successHandler,
-    errorCallback: errorHandlerCallback,
-  });
   const disabled = !isEmailValid || !isPasswordValid || loading;
-  const testId = title === '로그인' ? 'signin-form' : 'signup-form';
-  const authDispatch = useAuthDispatch();
-  useEffect(() => {
-    if (data?.access_token) {
-      setTimeout(() => {
-        setToken(authDispatch, data.access_token);
-      }, 2000);
-    }
-  }, [data, authDispatch]);
 
   const emailInputProps = {
     label: '이메일',
@@ -81,6 +61,13 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      setEmailFocus();
+    }
+  }
+  , [error, setEmailFocus]);
+
   const buttonIcon = loading ? (
     <LoadingIcon width="30px" height="30px" />
   ) : isButtonHover ? (
@@ -109,7 +96,7 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
           testId={testId}
           type="submit"
           ref={buttonRef}
-          disabled={disabled || data}
+          disabled={disabled || isSuccess}
           icon={buttonIcon}
           label={loading ? '로딩중...' : title}
         />
@@ -119,10 +106,12 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
 };
 
 interface IAuthProps {
-  api: (data?: any) => Promise<void>;
+  request: (data?: any) => Promise<void>;
+  error?: any;
+  loading?: boolean;
+  isSuccess?: boolean;
   title: string;
-  errorHandler: () => void;
-  successHandler?: () => void;
+  testId: string;
 }
 
 export default AuthForm;
