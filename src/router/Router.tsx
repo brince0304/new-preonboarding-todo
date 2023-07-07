@@ -1,3 +1,4 @@
+import App from 'App';
 import ErrorPage from 'pages/ErrorPage';
 import { useAuthState } from 'context';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
@@ -11,9 +12,13 @@ const PrivateRouteProvider = () => {
   const router = createBrowserRouter([
     {
       path: routeLink.main,
-      element: <Navigate to={routeLink.todo} replace={true} />,
+      element: <App />,
       errorElement: <ErrorPage />,
       children: [
+        {
+          index: true,
+          element: authState.token ? <Navigate to={routeLink.todo} replace={true} /> : <Navigate to={routeLink.signIn} replace={true} />,
+        },
         {
           path: routeLink.signIn,
           element: authState.token ? <Navigate to={routeLink.todo} replace={true} /> : <SignIn />,
@@ -27,7 +32,7 @@ const PrivateRouteProvider = () => {
           element: authState.token ? <Todo /> : <Navigate to={routeLink.signIn} replace={true} />,
         },
         {
-          path: '*',
+          path: '/*',
           element: <Navigate to={routeLink.signIn} replace={true} />,
         },
         {
