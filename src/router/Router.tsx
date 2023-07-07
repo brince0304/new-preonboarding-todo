@@ -1,4 +1,3 @@
-import App from 'App';
 import ErrorPage from 'pages/ErrorPage';
 import { useAuthState } from 'context';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
@@ -12,7 +11,7 @@ const PrivateRouteProvider = () => {
   const router = createBrowserRouter([
     {
       path: routeLink.main,
-      element: <App />,
+      element: <Navigate to={routeLink.todo} replace={true} />,
       errorElement: <ErrorPage />,
       children: [
         {
