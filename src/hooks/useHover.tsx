@@ -7,7 +7,7 @@ const useHover = (props: IUseHoverProps) => {
     props.ref.current.addEventListener('mouseenter', () => setIsHover(true));
     props.ref.current.addEventListener('mouseleave', () => setIsHover(false));
   }
-  return isHover;
+  return { isHover, setIsHover };
 };
 
 interface IUseHoverProps {

@@ -1,5 +1,5 @@
 import { Alert, Snackbar } from '@mui/material';
-import { ReactNode, useState } from 'react';
+import { Fragment, ReactNode, useState } from 'react';
 
 const useToast = (props: IUseToastProps) => {
   const [open, setOpen] = useState(false);
@@ -14,12 +14,21 @@ const useToast = (props: IUseToastProps) => {
 };
 
 const Toast = (props: IToastProps) => {
+  const toastStyle = {
+    borderRadius: '0',
+    backgroundColor: '#fff',
+    color: '#000',
+    width: '100%',
+    border: '2px solid #565656',
+  };
   return (
-    <Snackbar open={props.open} autoHideDuration={props.autoHideDuration} onClose={props.onClose}>
-      <Alert onClose={props.onClose} severity={props.severity} sx={props.sx}>
-        {props.children}
-      </Alert>
-    </Snackbar>
+    <Fragment>
+      <Snackbar open={props.open} autoHideDuration={props.autoHideDuration} onClose={props.onClose}>
+        <Alert onClose={props.onClose} severity={props.severity} sx={{ ...toastStyle, ...props.sx }}>
+          {props.children}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 };
 
