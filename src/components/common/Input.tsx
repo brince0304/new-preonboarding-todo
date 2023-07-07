@@ -6,7 +6,7 @@ const Input = forwardRef((props: IInputProps, ref: ForwardedRef<HTMLInputElement
   const { error, helperText, icon, label, testId, ...rest } = props;
   return (
     <S.Container>
-      <label>{label}</label>
+      {label && <label>{label}</label>}
       <S.Input ref={ref} {...rest} data-testid={testId} />
       <S.IconWrap>{icon}</S.IconWrap>
       <S.HelperText error={error}>{helperText}</S.HelperText>
