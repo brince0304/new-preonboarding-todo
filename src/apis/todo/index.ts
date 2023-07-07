@@ -1,17 +1,17 @@
 import client from 'apis/client';
 
 export const createTodo = async (todo: string): Promise<ITodo> => {
-  const {data} = await client.post('/todos', todo);
+  const { data } = await client.post('/todos', todo);
   return data;
 };
 
 export const getTodos = async (): Promise<ITodo[]> => {
-  const {data} = await client.get('/todos');
+  const { data } = await client.get('/todos');
   return data;
 };
 
 export const updateTodo = async (todo: ITodo): Promise<ITodo> => {
-  const {data} = await client.put(`/todos/${todo.id}`, todo);
+  const { data } = await client.put(`/todos/${todo.id}`, todo);
   return data;
 };
 
