@@ -1,19 +1,23 @@
 import client from 'apis/client';
 
 export const createTodo = async (todo: string): Promise<ITodo> => {
-  return await client.post('/todos', todo);
+  const {data} = await client.post('/todos', todo);
+  return data;
 };
 
 export const getTodos = async (): Promise<ITodo[]> => {
-  return await client.get('/todos');
+  const {data} = await client.get('/todos');
+  return data;
 };
 
-export const updateTodo = async (data: ITodo): Promise<ITodo> => {
-  return await client.put(`/todos/${data.id}`, data);
+export const updateTodo = async (todo: ITodo): Promise<ITodo> => {
+  const {data} = await client.put(`/todos/${todo.id}`, todo);
+  return data;
 };
 
-export const deleteTodo = async (id: number): Promise<ITodo> => {
-  return await client.delete(`/todos/${id}`);
+export const deleteTodo = async (id: number): Promise<boolean> => {
+  const res = await client.delete(`/todos/${id}`);
+  return res.status === 204;
 };
 
 export interface ITodo {

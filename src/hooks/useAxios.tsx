@@ -9,9 +9,7 @@ const useAxios = ({ api, errorCallback, successCallback }: IUseAxiosProps) => {
     try {
       setLoading(true);
       const response = await api(data);
-      if (response?.data) {
-        setData(response?.data);
-      } else {
+      if (response) {
         setData(response);
       }
       setError(null);
