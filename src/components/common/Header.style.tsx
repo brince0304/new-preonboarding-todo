@@ -11,6 +11,10 @@ export const Header = styled.header`
   box-sizing: border-box;
   border-bottom: 1px solid #121212;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  z-index: 100;
+  position: fixed;
+  top: 0;
 `;
 
 export const Logo = styled.div`
