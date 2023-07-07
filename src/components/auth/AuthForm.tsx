@@ -6,7 +6,7 @@ import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
 import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from '../common/Icon';
 
-const AuthForm = ({ testId, request, title, error, loading, isSuccess}: IAuthProps) => {
+const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthProps) => {
   const emailRegex = /@/;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -23,7 +23,6 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess}: IAuthPro
     isValidate: isPasswordValid,
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
-
 
   const disabled = !isEmailValid || !isPasswordValid || loading;
 
@@ -65,8 +64,7 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess}: IAuthPro
     if (error) {
       setEmailFocus();
     }
-  }
-  , [error, setEmailFocus]);
+  }, [error, setEmailFocus]);
 
   const buttonIcon = loading ? (
     <LoadingIcon width="30px" height="30px" />

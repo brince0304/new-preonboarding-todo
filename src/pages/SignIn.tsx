@@ -29,7 +29,7 @@ const SignIn = () => {
     handleOpenSuccessToast();
   };
   const { loading, error, request, data } = useAxios({
-    api : signIn,
+    api: signIn,
     successCallback: handleSignInSuccess,
     errorCallback: handleSignInError,
   });
@@ -44,7 +44,14 @@ const SignIn = () => {
 
   return (
     <S.Container>
-      <AuthForm isSuccess={!!data} title={'로그인'} error={error} loading={loading}  testId='signin-button' request={request}/>
+      <AuthForm
+        isSuccess={!!data}
+        title={'로그인'}
+        error={error}
+        loading={loading}
+        testId="signin-button"
+        request={request}
+      />
       {SignInToast}
       {ErrorToast}
     </S.Container>

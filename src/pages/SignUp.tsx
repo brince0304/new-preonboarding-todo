@@ -33,14 +33,21 @@ const SignUp = () => {
   };
 
   const { loading, error, request, data } = useAxios({
-    api : signUp,
+    api: signUp,
     successCallback: handleSignUpSuccess,
     errorCallback: handleSignUpError,
   });
 
   return (
     <S.Container>
-      <AuthForm title={'회원가입'} request={request} testId={'signup-button'} loading={loading} error={error} isSuccess={!!data} />
+      <AuthForm
+        title={'회원가입'}
+        request={request}
+        testId={'signup-button'}
+        loading={loading}
+        error={error}
+        isSuccess={!!data}
+      />
       {SignUpToast}
       {ErrorToast}
     </S.Container>
