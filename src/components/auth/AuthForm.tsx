@@ -6,7 +6,7 @@ import useInput from 'hooks/useInput';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
-import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from './AuthIcons';
+import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from '../common/Icon';
 
 const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
   const emailRegex = /@/;
@@ -25,14 +25,27 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
     isValidate: isPasswordValid,
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
+
+  const errorHandlerCallback = () => {
+    errorHandler && errorHandler();
+    setEmailFocus();
+  };
+
   const { loading, error, request, data } = useAxios({
     api,
     successCallback: successHandler,
-    errorCallback: errorHandler,
+    errorCallback: errorHandlerCallback,
   });
   const disabled = !isEmailValid || !isPasswordValid || loading;
   const testId = title === '로그인' ? 'signin-form' : 'signup-form';
   const authDispatch = useAuthDispatch();
+  useEffect(() => {
+    if (data?.access_token) {
+      setTimeout(() => {
+        setToken(authDispatch, data.access_token);
+      }, 2000);
+    }
+  }, [data, authDispatch]);
 
   const emailInputProps = {
     label: '이메일',
@@ -68,31 +81,26 @@ const AuthForm = ({ api, title, errorHandler, successHandler }: IAuthProps) => {
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      setEmailFocus();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error]);
-
-  useEffect(() => {
-    if (data?.access_token) {
-      setTimeout(() => {
-        setToken(authDispatch, data.access_token);
-      }, 2000);
-    }
-  }, [authDispatch, data]);
-
-  const buttonIcon = loading ? <LoadingIcon /> : isButtonHover ? <LoadingIcon /> : <Icon />;
-  const emailInputIcon = error ? <ErrorIcon width={'30px'} height={'30px'} /> : <SuccessIcon />;
+  const buttonIcon = loading ? (
+    <LoadingIcon width="30px" height="30px" />
+  ) : isButtonHover ? (
+    <LoadingIcon width="30px" height="30px" />
+  ) : (
+    <Icon width="30px" height="30px" />
+  );
+  const emailInputIcon = error ? (
+    <ErrorIcon width={'30px'} height={'30px'} />
+  ) : (
+    <SuccessIcon width="30px" height="30px" />
+  );
   const passwordInputIcon = <HideIcon isHide={isPasswordHide} setIsHide={setIsPasswordHide} />;
 
   return (
     <S.Container>
       <S.Title>
-        <HappyCatIcon />
+        <HappyCatIcon width="40px" height="40px" />
         <span>{title}</span>
-        <HappyCatIcon />
+        <HappyCatIcon width="40px" height="40px" />
       </S.Title>
       <S.Form onSubmit={onSubmit}>
         <Input {...emailInputProps} ref={emailInputRef} icon={emailInputIcon} />
