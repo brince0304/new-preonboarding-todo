@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AuthServiceInterface, IAuth } from 'services/authService';
 
 const authContext = createContext<IAuthContextReturn | null>(null);
@@ -9,7 +9,7 @@ export const AuthProvider = ({
   children,
   authService,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   authService: AuthServiceInterface;
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
