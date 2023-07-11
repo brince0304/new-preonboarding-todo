@@ -1,9 +1,9 @@
-import { signIn } from 'apis/auth';
 import AuthForm from 'components/auth/AuthForm';
-import { setToken, useAuthDispatch } from 'context';
-import useAxios from 'hooks/useAxios';
+import { useAuth } from 'context/AuthContext';
 import useToast, { IUseToastProps } from 'hooks/useToast';
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IAuth } from 'services/authService';
 import * as S from './SignIn.style';
 
 const SignIn = () => {
@@ -21,36 +21,32 @@ const SignIn = () => {
   } as IUseToastProps;
   const { toast: SignInToast, handleOpenToast: handleOpenSuccessToast } = useToast(successToastProps);
   const { toast: ErrorToast, handleOpenToast: handleOpenErrorToast } = useToast(errorToastProps);
-
-  const handleSignInError = () => {
-    handleOpenErrorToast();
-  };
-  const handleSignInSuccess = () => {
-    handleOpenSuccessToast();
-  };
-  const { loading, error, request, data } = useAxios({
-    api: signIn,
-    successCallback: handleSignInSuccess,
-    errorCallback: handleSignInError,
-  });
-  const authDispatch = useAuthDispatch();
-  useEffect(() => {
-    if (data?.access_token) {
-      setTimeout(() => {
-        setToken(authDispatch, data.access_token);
-      }, 2000);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const { signin } = useAuth();
+  const navigate = useNavigate();
+  const signInCallback = async (data: IAuth) => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      await signin(data);
+      handleOpenSuccessToast();
+      navigate('/todo');
+    } catch (e) {
+      setIsError(true);
+      handleOpenErrorToast();
     }
-  }, [data, authDispatch]);
+    setIsLoading(false);
+  };
 
   return (
     <S.Container>
       <AuthForm
-        isSuccess={!!data}
         title={'로그인'}
-        error={error}
-        loading={loading}
+        apiCallback={signInCallback}
         testId="signin-button"
-        request={request}
+        isError={isError}
+        isLoading={isLoading}
       />
       {SignInToast}
       {ErrorToast}

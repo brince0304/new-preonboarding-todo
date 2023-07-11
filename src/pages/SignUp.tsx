@@ -1,8 +1,9 @@
-import { signUp } from 'apis/auth';
 import AuthForm from 'components/auth/AuthForm';
-import useAxios from 'hooks/useAxios';
+import { useAuth } from 'context/AuthContext';
 import useToast, { IUseToastProps } from 'hooks/useToast';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { IAuth } from 'services/authService';
 import * as S from './SignIn.style';
 const SignUp = () => {
   const successToastProps = {
@@ -17,36 +18,36 @@ const SignUp = () => {
     sx: { width: '100%' },
     children: '이미 중복된 이메일이 존재합니다.',
   } as IUseToastProps;
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const { toast: SignUpToast, handleOpenToast: handleOpenSuccessToast } = useToast(successToastProps);
   const { toast: ErrorToast, handleOpenToast: handleOpenErrorToast } = useToast(errorToastProps);
   const navigate = useNavigate();
-
-  const handleSignUpError = () => {
-    handleOpenErrorToast();
+  const { signup } = useAuth();
+  const signupCallback = async (data: IAuth) => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      signup(data);
+      handleOpenSuccessToast();
+      setTimeout(() => {
+        navigate('/signin');
+      }, 2000);
+    } catch (e) {
+      setIsError(true);
+      handleOpenErrorToast();
+    }
+    setIsLoading(false);
   };
-  const handleSignUpSuccess = () => {
-    handleOpenSuccessToast();
-    setTimeout(() => {
-      navigate('/signin');
-    }, 2000);
-  };
-
-  const { loading, error, request, data } = useAxios({
-    api: signUp,
-    successCallback: handleSignUpSuccess,
-    errorCallback: handleSignUpError,
-  });
-
   return (
     <S.Container>
       <AuthForm
         title={'회원가입'}
-        request={request}
+        apiCallback={signupCallback}
         testId={'signup-button'}
-        loading={loading}
-        error={error}
-        isSuccess={!!data}
+        isLoading={isLoading}
+        isError={isError}
       />
       {SignUpToast}
       {ErrorToast}

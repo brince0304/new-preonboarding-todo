@@ -1,15 +1,15 @@
-import { deleteTodo, ITodo, updateTodo } from 'apis/todo';
 import Input, { IInputProps } from 'components/common/Input';
-import { getTokenFromLocalStorage } from 'context';
-import useAxios from 'hooks/useAxios';
+import { useAuth } from 'context/AuthContext';
+import { useTodo } from 'context/TodoContext';
 import useInput from 'hooks/useInput';
 import useToast, { IUseToastProps } from 'hooks/useToast';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { routeLink } from 'router/Router';
+import { ITodo } from 'services/todoService';
 import * as S from './TodoItem.style';
 
-const TodoItem = ({ todo, getTodos }: ITodoItemProps) => {
+const TodoItem = ({ todo }: ITodoItemProps) => {
   const [isOnEdit, setIsOnEdit] = useState(false);
   const todoInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -23,7 +23,7 @@ const TodoItem = ({ todo, getTodos }: ITodoItemProps) => {
   });
   const navigate = useNavigate();
 
-  const { id, isCompleted, todo: todoContent } = todo;
+  const { id, isCompleted, todo: todoContent, userId } = todo;
   const deleteToastProps = {
     severity: 'success',
     autoHideDuration: 3000,
@@ -45,46 +45,42 @@ const TodoItem = ({ todo, getTodos }: ITodoItemProps) => {
   const { toast: updateSuccessToast, handleOpenToast: handleOpenUpdateSuccessToast } = useToast(updateToastProps);
   const { toast: deleteSuccessToast, handleOpenToast: handleOpenDeleteSuccessToast } = useToast(deleteToastProps);
   const { toast: errorToast, handleOpenToast: handleOpenErrorToast } = useToast(errorToastProps);
+  const { isAuthenticated } = useAuth();
+  const { updateTodo, deleteTodo } = useTodo();
 
   const handleError = () => {
-    const token = getTokenFromLocalStorage();
     handleOpenErrorToast();
-    if (!token) {
+    if (!isAuthenticated) {
       setTimeout(() => {
         navigate(routeLink.signOut);
-      }, 3000);
+      }, 2000);
     }
   };
 
   const handleSuccessUpdateTodo = () => {
-    getTodos();
     handleOpenUpdateSuccessToast();
   };
-  const handleSuccessUpdateIsCompleted = () => {
-    getTodos();
-  };
+
   const handleSuccessDelete = () => {
-    getTodos();
     handleOpenDeleteSuccessToast();
   };
 
-  const { request: requestUpdate } = useAxios({
-    api: updateTodo,
-    successCallback: isOnEdit ? handleSuccessUpdateTodo : handleSuccessUpdateIsCompleted,
-    errorCallback: handleError,
-  });
-  const { request: requestDelete } = useAxios({
-    api: deleteTodo,
-    successCallback: handleSuccessDelete,
-    errorCallback: handleError,
-  });
-
   const handleToggleIsCompleted = async () => {
-    await requestUpdate({ id, todo: todoContent, isCompleted: !isCompleted });
+    try {
+      await updateTodo(id, { id: id, todo: todoContent, isCompleted: !isCompleted, userId: userId });
+      handleSuccessUpdateTodo();
+    } catch (e) {
+      handleError();
+    }
   };
 
   const handleDelete = async () => {
-    await requestDelete(id);
+    try {
+      await deleteTodo(id);
+      handleSuccessDelete();
+    } catch (e) {
+      handleError();
+    }
   };
 
   const handleToggleIsOnEdit = () => {
@@ -104,7 +100,12 @@ const TodoItem = ({ todo, getTodos }: ITodoItemProps) => {
       setIsOnEdit(false);
       return;
     }
-    await requestUpdate({ id, todo: todoInput, isCompleted });
+    try {
+      await updateTodo(id, { id: id, todo: todoInput, isCompleted: isCompleted, userId: userId });
+      handleSuccessUpdateTodo();
+    } catch (e) {
+      handleError();
+    }
     setIsOnEdit(false);
   };
 
@@ -136,7 +137,6 @@ const TodoItem = ({ todo, getTodos }: ITodoItemProps) => {
 
 interface ITodoItemProps {
   todo: ITodo;
-  getTodos: (data?: any) => Promise<void>;
 }
 
 export default TodoItem;
