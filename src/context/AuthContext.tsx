@@ -5,13 +5,7 @@ const authContext = createContext<IAuthContextReturn | null>(null);
 export const useAuth = () => useContext(authContext) as IAuthContextReturn;
 
 // eslint-disable-next-line no-undef
-export const AuthProvider = ({
-  children,
-  authService,
-}: {
-  children: ReactNode;
-  authService: AuthServiceInterface;
-}) => {
+export const AuthProvider = ({ children, authService }: { children: ReactNode; authService: AuthServiceInterface }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const signin = authService.signin.bind(authService);
   const signup = authService.signup.bind(authService);
