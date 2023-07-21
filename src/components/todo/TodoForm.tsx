@@ -1,19 +1,18 @@
 import { Tooltip } from '@mui/material';
-import { createTodo } from 'apis/todo';
 import { Icon, LoadingIcon } from 'components/common/Icon';
 import Button from 'components/common/Button';
 import Input, { IInputProps } from 'components/common/Input';
-import { getTokenFromLocalStorage } from 'context';
-import useAxios from 'hooks/useAxios';
 import useHover from 'hooks/useHover';
 import useInput from 'hooks/useInput';
 import useToast, { IUseToastProps } from 'hooks/useToast';
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { routeLink } from 'router/Router';
 import * as S from './TodoForm.style';
+import { useTodo } from 'context/TodoContext';
+import { useAuth } from 'context/AuthContext';
 
-const TodoForm = ({ getTodos }: ITodoFormProps) => {
+const TodoForm = () => {
   const navigate = useNavigate();
   const todoInputRef = useRef<HTMLInputElement>(null);
   const todoButtonRef = useRef<HTMLButtonElement>(null);
@@ -37,36 +36,37 @@ const TodoForm = ({ getTodos }: ITodoFormProps) => {
   } as IUseToastProps;
   const { toast: successToast, handleOpenToast: handleOpenSuccessToast } = useToast(successToastProps);
   const { toast: errorToast, handleOpenToast: handleOpenErrorToast } = useToast(errorToastProps);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const { addTodo } = useTodo();
+  const { isAuthenticated } = useAuth();
   const successHandler = () => {
     setValue('');
-    getTodos();
     handleOpenSuccessToast();
     setIsButtonHover(false);
   };
 
   const errorHandler = () => {
-    const token = getTokenFromLocalStorage();
     handleOpenErrorToast();
     setIsButtonHover(false);
-    if (!token) {
+    if (!isAuthenticated) {
       setTimeout(() => {
         navigate(routeLink.signOut);
-      }, 3000);
+      }, 2000);
     }
   };
-
-  const { loading, request } = useAxios({
-    api: createTodo,
-    successCallback: successHandler,
-    errorCallback: errorHandler,
-  });
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isValidate) {
-      await request({ todo: value });
+      setIsLoading(true);
+      try {
+        addTodo(value);
+        successHandler();
+      } catch (e) {
+        errorHandler();
+      }
     }
+    setIsLoading(false);
   };
 
   const todoInputProps = {
@@ -78,8 +78,8 @@ const TodoForm = ({ getTodos }: ITodoFormProps) => {
     testId: 'new-todo-input',
   } as IInputProps;
   const { isHover: isButtonHover, setIsHover: setIsButtonHover } = useHover({ ref: todoButtonRef });
-  const submitButtonDisabled = !isValidate || loading;
-  const submitButtonLabel = loading ? (
+  const submitButtonDisabled = !isValidate || isLoading;
+  const submitButtonLabel = isLoading ? (
     <LoadingIcon width="30px" height="30px" />
   ) : isButtonHover ? (
     <LoadingIcon width="30px" height="30px" />
@@ -106,9 +106,5 @@ const TodoForm = ({ getTodos }: ITodoFormProps) => {
     </S.Form>
   );
 };
-
-interface ITodoFormProps {
-  getTodos: (data?: any) => Promise<void>;
-}
 
 export default TodoForm;

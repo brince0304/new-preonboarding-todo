@@ -1,27 +1,24 @@
-import { ITodo } from 'apis/todo';
 import Loading from 'components/common/Loading';
+import { ITodo } from 'services/todoService';
 import TodoItem from './TodoItem';
 import * as S from './TodoList.style';
 
-const TodoList = ({ todos, getTodos, error, loading }: ITodoListProps) => {
+const TodoList = ({ todos, isLoading, isError }: ITodoListProps) => {
   return (
     <S.Container>
-      {!!todos &&
-        !loading &&
-        todos.map((todo, index) => {
-          return <TodoItem key={index} todo={todo} getTodos={getTodos} />;
-        })}
-      {error && <div>에러가 발생했습니다.</div>}
-      {loading && <Loading />}
+      {todos.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
+      {isError && <div>에러가 발생했습니다.</div>}
+      {isLoading && <Loading />}
     </S.Container>
   );
 };
 
 interface ITodoListProps {
   todos: ITodo[];
-  getTodos: (data?: any) => Promise<void>;
-  error?: any;
-  loading?: boolean;
+  isError?: boolean;
+  isLoading?: boolean;
 }
 
 export default TodoList;

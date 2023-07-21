@@ -1,10 +1,13 @@
-import { setToken, useAuthDispatch } from 'context';
+import { useAuth } from 'context/AuthContext';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 const SignOut = () => {
-  const authDispatch = useAuthDispatch();
+  const { signout } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
-    setToken(authDispatch, null);
+    signout();
+    navigate('/');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

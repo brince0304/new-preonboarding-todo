@@ -1,12 +1,12 @@
 import Button from 'components/common/Button';
 import useHover from 'hooks/useHover';
 import useInput from 'hooks/useInput';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import Input, { IInputProps } from '../common/Input';
 import * as S from './AuthForm.style';
 import { ErrorIcon, HappyCatIcon, HideIcon, Icon, LoadingIcon, SuccessIcon } from '../common/Icon';
 
-const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthProps) => {
+const AuthForm = ({ testId, apiCallback, title, isLoading, isError }: IAuthProps) => {
   const emailRegex = /@/;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -24,7 +24,7 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthPr
   } = useInput<string>({ initialValue: '', regex: passwordRegex, refObject: passwordInputRef });
   const [isPasswordHide, setIsPasswordHide] = useState(true);
 
-  const disabled = !isEmailValid || !isPasswordValid || loading;
+  const disabled = !isEmailValid || !isPasswordValid || isLoading;
 
   const emailInputProps = {
     label: '이메일',
@@ -56,24 +56,22 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthPr
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isEmailValid && isPasswordValid) {
-      await request({ email: emailValue, password: passwordValue });
+      try {
+        apiCallback({ email: emailValue, password: passwordValue });
+      } catch (e) {
+        setEmailFocus();
+      }
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      setEmailFocus();
-    }
-  }, [error, setEmailFocus]);
-
-  const buttonIcon = loading ? (
+  const buttonIcon = isLoading ? (
     <LoadingIcon width="30px" height="30px" />
   ) : isButtonHover ? (
     <LoadingIcon width="30px" height="30px" />
   ) : (
     <Icon width="30px" height="30px" />
   );
-  const emailInputIcon = error ? (
+  const emailInputIcon = isError ? (
     <ErrorIcon width={'30px'} height={'30px'} />
   ) : (
     <SuccessIcon width="30px" height="30px" />
@@ -94,9 +92,9 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthPr
           testId={testId}
           type="submit"
           ref={buttonRef}
-          disabled={disabled || isSuccess}
+          disabled={disabled}
           icon={buttonIcon}
-          label={loading ? '로딩중...' : title}
+          label={isLoading ? '로딩중...' : title}
         />
       </S.Form>
     </S.Container>
@@ -104,10 +102,9 @@ const AuthForm = ({ testId, request, title, error, loading, isSuccess }: IAuthPr
 };
 
 interface IAuthProps {
-  request: (data?: any) => Promise<void>;
-  error?: any;
-  loading?: boolean;
-  isSuccess?: boolean;
+  apiCallback: (data?: any) => void;
+  isLoading?: boolean;
+  isError?: boolean;
   title: string;
   testId: string;
 }

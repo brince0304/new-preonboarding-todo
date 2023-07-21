@@ -1,14 +1,14 @@
 import App from 'App';
 import ErrorPage from 'pages/ErrorPage';
-import { useAuthState } from 'context';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import SignIn from 'pages/SignIn';
 import SignUp from 'pages/SignUp';
 import Todo from 'pages/Todo';
 import SignOut from 'pages/SignOut';
+import { useAuth } from 'context/AuthContext';
 
 const PrivateRouteProvider = () => {
-  const authState = useAuthState();
+  const { isAuthenticated } = useAuth();
   const router = createBrowserRouter([
     {
       path: routeLink.main,
@@ -17,19 +17,23 @@ const PrivateRouteProvider = () => {
       children: [
         {
           index: true,
-          element: authState.token ? <Navigate to={routeLink.todo} replace={true} /> : <Navigate to={routeLink.signIn} replace={true} />,
+          element: isAuthenticated ? (
+            <Navigate to={routeLink.todo} replace={true} />
+          ) : (
+            <Navigate to={routeLink.signIn} replace={true} />
+          ),
         },
         {
           path: routeLink.signIn,
-          element: authState.token ? <Navigate to={routeLink.todo} replace={true} /> : <SignIn />,
+          element: isAuthenticated ? <Navigate to={routeLink.todo} replace={true} /> : <SignIn />,
         },
         {
           path: routeLink.signUp,
-          element: authState.token ? <Navigate to={routeLink.todo} replace={true} /> : <SignUp />,
+          element: isAuthenticated ? <Navigate to={routeLink.todo} replace={true} /> : <SignUp />,
         },
         {
           path: routeLink.todo,
-          element: authState.token ? <Todo /> : <Navigate to={routeLink.signIn} replace={true} />,
+          element: isAuthenticated ? <Todo /> : <Navigate to={routeLink.signIn} replace={true} />,
         },
         {
           path: '/*',
@@ -37,7 +41,7 @@ const PrivateRouteProvider = () => {
         },
         {
           path: routeLink.signOut,
-          element: authState.token === null ? <Navigate to={routeLink.signIn} replace={true} /> : <SignOut />,
+          element: !isAuthenticated ? <Navigate to={routeLink.signIn} replace={true} /> : <SignOut />,
         },
       ],
     },
